@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -31,7 +32,8 @@ public class RoleController {
     public ResponseEntity<Map<String, Object>> getRoles() {
         Map<String, Object> response = new HashMap<>();
 
-        response.put("roles", roleMapper.toRoleDto(roleService.getRoles()));
+        List<Role> roles = roleService.getRoles();
+        response.put("roles", roleMapper.toRoleDto(roles));
 
         return ResponseEntity.ok(response);
     }
