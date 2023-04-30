@@ -1,5 +1,6 @@
 package com.secondhand.role;
 
+import com.secondhand.exception.RoleNotFoundException;
 import jakarta.transaction.Transactional;
 
 import lombok.AllArgsConstructor;
@@ -15,59 +16,29 @@ public class RoleService {
 
     private final RoleRepository roleRepository;
 
-    public Role getRoleByName(String name) {
-        return roleRepository.findByName(name).orElse(null);
-    }
-
-    public List<Role> getRoles() {
+    public List<Role> getAllRoles() {
         return roleRepository.findAll();
     }
 
-    public Role save(Role role) {
-        return roleRepository.save(role);
-    }
-
-    public void delete(Role role) {
-        roleRepository.delete(role);
-    }
-
-    public void deleteAll() {
-        roleRepository.deleteAll();
+    public Role getRoleByName(String name) {
+        return roleRepository.findByName(name)
+            .orElseThrow(() -> new RoleNotFoundException("Role not found with name: " + name));
     }
 
     public Role getRoleById(Long id) {
-        return roleRepository.findById(id).orElse(null);
+        return roleRepository.findById(id)
+            .orElseThrow(() -> new RoleNotFoundException("Role not found with id: " + id));
     }
 
-    public Iterable<Role> getAllRoles() {
-        return roleRepository.findAll();
+    public Role saveRole(Role role) {
+        return roleRepository.save(role);
     }
 
-    public boolean existsById(Long id) {
-        return roleRepository.existsById(id);
+    public void deleteRole(Role role) {
+        roleRepository.delete(role);
     }
 
-    public boolean existsByName(String name) {
-        return roleRepository.existsByName(name);
-    }
-
-    public long count() {
-        return roleRepository.count();
-    }
-
-    public void deleteById(Long id) {
+    public void deleteRoleById(Long id) {
         roleRepository.deleteById(id);
-    }
-
-    public void deleteAll(Iterable<Role> roles) {
-        roleRepository.deleteAll(roles);
-    }
-
-    public Iterable<Role> saveAll(Iterable<Role> roles) {
-        return roleRepository.saveAll(roles);
-    }
-
-    public Iterable<Role> findAllById(Iterable<Long> ids) {
-        return roleRepository.findAllById(ids);
     }
 }

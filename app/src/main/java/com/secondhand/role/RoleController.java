@@ -32,7 +32,7 @@ public class RoleController {
     public ResponseEntity<Map<String, Object>> getRoles() {
         Map<String, Object> response = new HashMap<>();
 
-        List<Role> roles = roleService.getRoles();
+        List<Role> roles = roleService.getAllRoles();
         response.put("roles", roleMapper.toRoleDto(roles));
 
         return ResponseEntity.ok(response);

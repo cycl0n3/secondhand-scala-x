@@ -1,5 +1,6 @@
 package com.secondhand.user;
 
+import com.secondhand.exception.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +17,18 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
 
     public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElse(null);
+        return userRepository.findByUsername(username)
+            .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
     }
 
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElse(null);
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
     }
 
     public User saveUser(User user) {
@@ -41,21 +45,5 @@ public class UserService {
 
     public void deleteUserByEmail(String email) {
         userRepository.deleteByEmail(email);
-    }
-
-    public boolean existsUserById(Long id) {
-        return userRepository.existsById(id);
-    }
-
-    public boolean existsUserByUsername(String username) {
-        return userRepository.existsByUsername(username);
-    }
-
-    public boolean existsUserByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    public boolean existsUserByUsernameOrEmail(String username, String email) {
-        return userRepository.existsByUsernameOrEmail(username, email);
     }
 }
