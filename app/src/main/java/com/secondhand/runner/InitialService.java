@@ -8,6 +8,7 @@ import com.secondhand.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
@@ -23,6 +24,8 @@ public class InitialService {
     private final RoleRepository roleRepository;
 
     private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     public void init() {
         logger.info("Initializing database...");
@@ -62,7 +65,7 @@ public class InitialService {
 
         User adminUser = new User();
         adminUser.setUsername("admin");
-        adminUser.setPassword("admin");
+        adminUser.setPassword(passwordEncoder.encode("admin"));
         adminUser.setEmail("admin@localhost");
         adminUser.getRoles().add(adminRole);
 
@@ -72,7 +75,7 @@ public class InitialService {
 
         User userUser = new User();
         userUser.setUsername("user");
-        userUser.setPassword("user");
+        userUser.setPassword(passwordEncoder.encode("user"));
         userUser.setEmail("user@localhost");
         userUser.getRoles().add(userRole);
 
@@ -82,7 +85,7 @@ public class InitialService {
 
         User guestUser = new User();
         guestUser.setUsername("guest");
-        guestUser.setPassword("guest");
+        guestUser.setPassword(passwordEncoder.encode("guest"));
         guestUser.setEmail("guest@localhost");
         guestUser.getRoles().add(guestRole);
 
@@ -92,7 +95,7 @@ public class InitialService {
 
         User sam = new User();
         sam.setUsername("sam");
-        sam.setPassword("sam");
+        sam.setPassword(passwordEncoder.encode("sam"));
         sam.setEmail("sam@localhost");
         sam.getRoles().add(userRole);
         sam.getRoles().add(moderatorRole);

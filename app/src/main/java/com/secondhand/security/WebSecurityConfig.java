@@ -43,7 +43,9 @@ public class WebSecurityConfig {
             .anyRequest().authenticated();*/
 
         http.authorizeHttpRequests()
-            .requestMatchers("/user/**").permitAll()
+            .requestMatchers("/api/v1/auth/**", "/api/v1/item/**").permitAll()
+            .requestMatchers("/api/v1/orders", "/api/v1/orders/**").hasAnyAuthority(ROLE_MAPPING.get("ROLE_ADMIN"), ROLE_MAPPING.get("ROLE_USER"))
+            .requestMatchers("/api/v1/cart", "/api/v1/cart/**").hasAnyAuthority(ROLE_MAPPING.get("ROLE_ADMIN"), ROLE_MAPPING.get("ROLE_USER"))
                 .anyRequest().authenticated();
 
         http.addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
