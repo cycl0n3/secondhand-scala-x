@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -18,19 +19,16 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
-            .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
     }
 
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-            .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-            .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public User saveUser(User user) {

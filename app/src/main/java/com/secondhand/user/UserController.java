@@ -35,7 +35,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<Map<String, Object>> getUser(@PathVariable Long userId) {
-        User user = userService.getUserById(userId);
+        User user = userService.getUserById(userId).orElse(null);
 
         Map<String, Object> response = new HashMap<>();
         response.put("user", userMapper.toUserDto(user));
@@ -45,7 +45,7 @@ public class UserController {
 
     @GetMapping("/{username}")
     public ResponseEntity<Map<String, Object>> getUser(@PathVariable String username) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.getUserByUsername(username).orElse(null);
 
         Map<String, Object> response = new HashMap<>();
         response.put("user", userMapper.toUserDto(user));
