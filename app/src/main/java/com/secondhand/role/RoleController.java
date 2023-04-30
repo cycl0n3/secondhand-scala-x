@@ -33,7 +33,8 @@ public class RoleController {
 
         Map<String, Object> response = new HashMap<>();
 
-        response.put("role", roleMapper.toRoleDto(role));
+        response.put("role1", role);
+        response.put("role2", roleMapper.toRoleDto(role));
 
         return ResponseEntity.ok(response);
     }
