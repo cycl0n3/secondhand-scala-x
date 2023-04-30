@@ -1,6 +1,7 @@
 package com.secondhand.user;
 
 import com.secondhand.exception.UserNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class UserService {
 
     private final UserRepository userRepository;

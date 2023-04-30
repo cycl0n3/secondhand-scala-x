@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.HashMap;
@@ -23,7 +24,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getAllUsers() {
+    public ResponseEntity<Map<String, Object>> getUsers() {
         List<User> users = userService.getAllUsers();
 
         Map<String, Object> response = new HashMap<>();
@@ -33,8 +34,18 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Map<String, Object>> getUserById(Long userId) {
+    public ResponseEntity<Map<String, Object>> getUser(@PathVariable Long userId) {
         User user = userService.getUserById(userId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", userMapper.toUserDto(user));
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<Map<String, Object>> getUser(@PathVariable String username) {
+        User user = userService.getUserByUsername(username);
 
         Map<String, Object> response = new HashMap<>();
         response.put("user", userMapper.toUserDto(user));

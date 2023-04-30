@@ -43,7 +43,16 @@ public class RoleController {
         Role role = roleService.getRoleById(roleId);
 
         Map<String, Object> response = new HashMap<>();
+        response.put("role", roleMapper.toRoleDto(role));
 
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{roleName}")
+    public ResponseEntity<Map<String, Object>> getRole(@PathVariable String roleName) {
+        Role role = roleService.getRoleByName(roleName);
+
+        Map<String, Object> response = new HashMap<>();
         response.put("role", roleMapper.toRoleDto(role));
 
         return ResponseEntity.ok(response);
