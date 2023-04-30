@@ -33,7 +33,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/id/{userId}")
     public ResponseEntity<Map<String, Object>> getUser(@PathVariable Long userId) {
         User user = userService.getUserById(userId).orElse(null);
 
@@ -43,7 +43,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/username/{username}")
     public ResponseEntity<Map<String, Object>> getUser(@PathVariable String username) {
         User user = userService.getUserByUsername(username).orElse(null);
 
