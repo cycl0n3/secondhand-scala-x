@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 @Transactional
@@ -15,6 +17,10 @@ public class RoleService {
 
     public Role getRoleByName(String name) {
         return roleRepository.findByName(name).orElse(null);
+    }
+
+    public List<Role> getRoles() {
+        return roleRepository.findAll();
     }
 
     public Role save(Role role) {

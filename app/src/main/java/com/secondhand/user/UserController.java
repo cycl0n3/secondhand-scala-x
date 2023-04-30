@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @AllArgsConstructor
@@ -18,13 +20,17 @@ public class UserController {
 
     private final UserService userService;
 
+    private final UserMapper userMapper;
+
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = new ArrayList<>();
+    public ResponseEntity<Map<String, Object>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
 
-        userService.getAllUsers().forEach(users::add);
+        Map<String, Object> response = new HashMap<>();
 
-        return ResponseEntity.ok(users);
+        response.put("users", userMapper.toUserDto(users));
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/ex")
