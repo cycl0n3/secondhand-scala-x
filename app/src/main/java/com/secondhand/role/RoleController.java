@@ -1,6 +1,7 @@
 package com.secondhand.role;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 
 import org.slf4j.Logger;
@@ -59,7 +60,7 @@ public class RoleController {
     }
 
     @GetMapping("/{roleId}")
-    public ResponseEntity<Map<String, Object>> getRole(@Valid @PathVariable Long roleId) {
+    public ResponseEntity<Map<String, Object>> getRole(@PathVariable @Min(0) Long roleId) {
         Optional<Role> role = roleService.getRoleById(roleId);
 
         if(role.isEmpty()) {

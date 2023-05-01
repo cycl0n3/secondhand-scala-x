@@ -4,6 +4,7 @@ import com.secondhand.role.Role;
 import com.secondhand.role.RoleMapper;
 import com.secondhand.role.RoleService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 
 import org.slf4j.Logger;
@@ -11,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -41,36 +41,54 @@ public class UserController {
             return ResponseEntity.noContent().build();
         }
 
-        Map<String, Object> response = new HashMap<>();
-
         List<UserDto> userDtos = userMapper.toUserDto(users);
 
         // set password to stars for security reasons
 
         userDtos.forEach(userDto -> userDto.setPassword("*****"));
 
+        Map<String, Object> response = new HashMap<>();
         response.put("users", userDtos);
 
         return ResponseEntity.ok(response);
     }
 
-    // save user to database
+    // save user to database if username and email doesn't exist
     @PostMapping("/save")
     public ResponseEntity<Map<String, Object>> saveUser(@Valid @RequestBody UserDto userDto) {
+        Optional<User> userByUsername = userService.getUserByUsername(userDto.getUsername());
+        Optional<User> userByEmail = userService.getUserByEmail(userDto.getEmail());
+
+        if(userByUsername.isPresent()) {
+            logger.error("Username {} already exists.", userDto.getUsername());
+            return ResponseEntity.badRequest().build();
+        }
+
+        if(userByEmail.isPresent()) {
+            logger.error("Email {} already exists.", userDto.getEmail());
+            return ResponseEntity.badRequest().build();
+        }
+
         User user = userMapper.toUser(userDto);
 
         User savedUser = userService.saveUser(user);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("user", userMapper.toUserDto(savedUser));
+        UserDto savedUserDto = userMapper.toUserDto(savedUser);
 
-        URI location = URI.create(String.format("/api/v1/user/id/%s", savedUser.getId()));
+        // set password to stars for security reasons
+
+        savedUserDto.setPassword("*****");
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", savedUserDto);
+
+        URI location = URI.create(String.format("/api/v1/user/%s", savedUser.getId()));
 
         return ResponseEntity.created(location).body(response);
     }
 
     @GetMapping("/id/{userId}")
-    public ResponseEntity<Map<String, Object>> getUser(@PathVariable Long userId) {
+    public ResponseEntity<Map<String, Object>> getUser(@PathVariable @Min(0) Long userId) {
         Optional<User> user = userService.getUserById(userId);
 
         if(user.isEmpty()) {
@@ -78,13 +96,13 @@ public class UserController {
             return ResponseEntity.noContent().build();
         }
 
-        Map<String, Object> response = new HashMap<>();
+        UserDto userDto = userMapper.toUserDto(user.get());
 
         // set password to stars for security reasons
 
-        UserDto userDto = userMapper.toUserDto(user.get());
         userDto.setPassword("*****");
 
+        Map<String, Object> response = new HashMap<>();
         response.put("user", userDto);
 
         return ResponseEntity.ok(response);
@@ -99,13 +117,13 @@ public class UserController {
             return ResponseEntity.noContent().build();
         }
 
-        Map<String, Object> response = new HashMap<>();
-
         // set password to stars for security reasons
 
         UserDto userDto = userMapper.toUserDto(user.get());
 
         userDto.setPassword("*****");
+
+        Map<String, Object> response = new HashMap<>();
         response.put("user", userDto);
 
         return ResponseEntity.ok(response);
@@ -113,7 +131,7 @@ public class UserController {
 
     // add role to user and check if that role exists for that user
     @PostMapping("/addRole/{userId}/{roleId}")
-    public ResponseEntity<Map<String, Object>> addRoleToUser(@PathVariable Long userId, @PathVariable Long roleId) {
+    public ResponseEntity<Map<String, Object>> addRoleToUser(@PathVariable @Min(0) Long userId, @PathVariable @Min(0) Long roleId) {
         Optional<User> user = userService.getUserById(userId);
         Optional<Role> role = roleService.getRoleById(roleId);
 
@@ -134,11 +152,15 @@ public class UserController {
 
         User updatedUser = userService.addRoleToUser(user.get().getUsername(), role.get().getName());
 
+        UserDto updatedUserDto = userMapper.toUserDto(updatedUser);
+
+        // set password to stars for security reasons
+
+        updatedUserDto.setPassword("*****");
+
         Map<String, Object> response = new HashMap<>();
-        response.put("user", userMapper.toUserDto(updatedUser));
+        response.put("user", updatedUserDto);
 
-        URI location = URI.create(String.format("/api/v1/user/id/%s", updatedUser.getId()));
-
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.ok().body(response);
     }
 }
