@@ -2,7 +2,6 @@ package com.secondhand.auth;
 
 import com.secondhand.security.TokenProvider;
 import com.secondhand.user.User;
-import com.secondhand.user.UserMapper;
 import com.secondhand.user.UserService;
 
 import lombok.AllArgsConstructor;
@@ -26,8 +25,6 @@ import java.util.Map;
 public class AuthController {
 
     private final UserService userService;
-
-    private final UserMapper userMapper;
 
     private final PasswordEncoder passwordEncoder;
 

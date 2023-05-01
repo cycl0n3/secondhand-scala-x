@@ -1,7 +1,5 @@
 package com.secondhand.security;
 
-import com.secondhand.misc.CustomUserDetails;
-
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -27,7 +26,8 @@ public class TokenProvider {
     private long jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
-        CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
+        //CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
+        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
 
         List<String> roles = userPrincipal.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -46,8 +46,8 @@ public class TokenProvider {
             .setSubject(userPrincipal.getUsername())
             .claim("rol", roles)
             .claim("name", userPrincipal.getUsername())
-            .claim("preferred_username", userPrincipal.getUsername())
-            .claim("email", userPrincipal.getEmail())
+            //.claim("preferred_username", userPrincipal.getUsername())
+            //.claim("email", userPrincipal.getEmail())
             .compact();
     }
 
