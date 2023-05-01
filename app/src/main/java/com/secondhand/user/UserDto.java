@@ -1,9 +1,8 @@
 package com.secondhand.user;
 
-import com.secondhand.role.Role;
+import com.secondhand.role.RoleDto;
 
 import lombok.Data;
-
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -20,5 +19,5 @@ public class UserDto {
 
     private String password;
 
-    private List<Role> roles;
+    private List<RoleDto> roles;
 }

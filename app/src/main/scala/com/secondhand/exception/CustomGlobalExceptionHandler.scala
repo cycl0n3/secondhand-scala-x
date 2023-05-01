@@ -12,7 +12,7 @@ import java.util
 class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     override def handleMethodArgumentNotValid(ex: MethodArgumentNotValidException, headers: HttpHeaders, status: HttpStatusCode, request: WebRequest): ResponseEntity[AnyRef] = {
-        val body = new util.HashMap[String, AnyRef]()
+        val body = new util.HashMap[String, Any]()
 
         body.put("timestamp", java.time.LocalDateTime.now())
         body.put("status", status.value())

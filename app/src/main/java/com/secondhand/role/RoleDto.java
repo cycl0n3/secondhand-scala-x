@@ -1,12 +1,7 @@
 package com.secondhand.role;
 
-import com.secondhand.user.User;
-
 import lombok.Data;
-
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,5 +11,5 @@ public class RoleDto {
 
     private String name;
 
-    private List<User> users;
+    // private List<UserDto> users;
 }
