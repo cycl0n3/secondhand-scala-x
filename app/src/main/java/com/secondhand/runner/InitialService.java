@@ -42,19 +42,19 @@ public class InitialService {
         Role moderatorRole = new Role();
         moderatorRole.setName("MODERATOR");
 
-        if(!roleRepository.existsByName("ADMIN")) {
+        if(roleRepository.findByName("ADMIN").isEmpty()) {
             roleRepository.save(adminRole);
         }
 
-        if(!roleRepository.existsByName("USER")) {
+        if(roleRepository.findByName("USER").isEmpty()) {
             roleRepository.save(userRole);
         }
 
-        if(!roleRepository.existsByName("GUEST")) {
+        if(roleRepository.findByName("GUEST").isEmpty()) {
             roleRepository.save(guestRole);
         }
 
-        if(!roleRepository.existsByName("MODERATOR")) {
+        if(roleRepository.findByName("MODERATOR").isEmpty()) {
             roleRepository.save(moderatorRole);
         }
 
@@ -67,9 +67,11 @@ public class InitialService {
         adminUser.setUsername("admin");
         adminUser.setPassword(passwordEncoder.encode("admin"));
         adminUser.setEmail("admin@localhost");
-        adminUser.getRoles().add(adminRole);
+        if(adminRole != null) {
+            adminUser.getRoles().add(adminRole);
+        }
 
-        if(!userRepository.existsByUsername("admin")) {
+        if(userRepository.findByUsername("admin").isEmpty()) {
             userRepository.save(adminUser);
         }
 
@@ -77,9 +79,11 @@ public class InitialService {
         userUser.setUsername("user");
         userUser.setPassword(passwordEncoder.encode("user"));
         userUser.setEmail("user@localhost");
-        userUser.getRoles().add(userRole);
+        if(userRole != null) {
+            userUser.getRoles().add(userRole);
+        }
 
-        if(!userRepository.existsByUsername("user")) {
+        if(userRepository.findByUsername("user").isEmpty()) {
             userRepository.save(userUser);
         }
 
@@ -87,9 +91,11 @@ public class InitialService {
         guestUser.setUsername("guest");
         guestUser.setPassword(passwordEncoder.encode("guest"));
         guestUser.setEmail("guest@localhost");
-        guestUser.getRoles().add(guestRole);
+        if(guestRole != null) {
+            guestUser.getRoles().add(guestRole);
+        }
 
-        if(!userRepository.existsByUsername("guest")) {
+        if(userRepository.findByUsername("guest").isEmpty()) {
             userRepository.save(guestUser);
         }
 
@@ -98,9 +104,11 @@ public class InitialService {
         sam.setPassword(passwordEncoder.encode("sam"));
         sam.setEmail("sam@localhost");
         sam.getRoles().add(userRole);
-        sam.getRoles().add(moderatorRole);
+        if(moderatorRole != null) {
+            sam.getRoles().add(moderatorRole);
+        }
 
-        if(!userRepository.existsByUsername("sam")) {
+        if(userRepository.findByUsername("sam").isEmpty()) {
             userRepository.save(sam);
         }
 

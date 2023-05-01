@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/role")
@@ -40,20 +41,30 @@ public class RoleController {
 
     @GetMapping("/{roleId}")
     public ResponseEntity<Map<String, Object>> getRole(@PathVariable Long roleId) {
-        Role role = roleService.getRoleById(roleId);
+        Optional<Role> role = roleService.getRoleById(roleId);
+
+        if(role.isEmpty()) {
+            logger.error("Role with id {} not found.", roleId);
+            return ResponseEntity.notFound().build();
+        }
 
         Map<String, Object> response = new HashMap<>();
-        response.put("role", roleMapper.toRoleDto(role));
+        response.put("role", roleMapper.toRoleDto(role.get()));
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{roleName}")
     public ResponseEntity<Map<String, Object>> getRole(@PathVariable String roleName) {
-        Role role = roleService.getRoleByName(roleName);
+        Optional<Role> role = roleService.getRoleByName(roleName);
+
+        if(role.isEmpty()) {
+            logger.error("Role with name {} not found.", roleName);
+            return ResponseEntity.notFound().build();
+        }
 
         Map<String, Object> response = new HashMap<>();
-        response.put("role", roleMapper.toRoleDto(role));
+        response.put("role", roleMapper.toRoleDto(role.get()));
 
         return ResponseEntity.ok(response);
     }

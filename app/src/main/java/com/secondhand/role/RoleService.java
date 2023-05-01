@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -20,14 +21,12 @@ public class RoleService {
         return roleRepository.findAll();
     }
 
-    public Role getRoleByName(String name) {
-        return roleRepository.findByName(name)
-            .orElseThrow(() -> new RoleNotFoundException("Role not found with name: " + name));
+    public Optional<Role> getRoleByName(String name) {
+        return roleRepository.findByName(name);
     }
 
-    public Role getRoleById(Long id) {
-        return roleRepository.findById(id)
-            .orElseThrow(() -> new RoleNotFoundException("Role not found with id: " + id));
+    public Optional<Role> getRoleById(Long id) {
+        return roleRepository.findById(id);
     }
 
     public Role saveRole(Role role) {
