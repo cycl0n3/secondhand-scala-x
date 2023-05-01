@@ -1,6 +1,5 @@
 package com.secondhand.role;
 
-import com.secondhand.exception.RoleNotFoundException;
 import jakarta.transaction.Transactional;
 
 import lombok.AllArgsConstructor;
