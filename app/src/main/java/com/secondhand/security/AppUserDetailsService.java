@@ -41,16 +41,6 @@ public class AppUserDetailsService implements UserDetailsService {
         List<SimpleGrantedAuthority> authorities = user.getRoles().stream().map(role ->
                 new SimpleGrantedAuthority(role.getName())).toList();
 
-        /*CustomUserDetails customUserDetails = new CustomUserDetails();
-
-        customUserDetails.setId(user.getId());
-        customUserDetails.setUsername(user.getUsername());
-        customUserDetails.setEmail(user.getEmail());
-        customUserDetails.setPassword(user.getPassword());
-        customUserDetails.setAuthorities(authorities);
-
-        return customUserDetails;*/
-
         // return spring security user
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
     }

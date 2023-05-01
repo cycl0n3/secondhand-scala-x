@@ -23,10 +23,11 @@ import lombok.AllArgsConstructor;
 
 @Slf4j
 @AllArgsConstructor
-@Component
+//@Component
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
+
     private final TokenProvider tokenProvider;
 
     @Override

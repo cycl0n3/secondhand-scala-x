@@ -8,9 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.authentication.configurers.userdetails.DaoAuthenticationConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -31,7 +29,7 @@ public class WebSecurityConfig {
 
     private final AppUserDetailsService userDetailsService;
 
-    private final TokenAuthenticationFilter tokenAuthenticationFilter;
+    private final AuthenticationManager authenticationManager;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -50,15 +48,6 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        /*http.authorizeHttpRequests()
-            .requestMatchers(HttpMethod.POST, "/api/orders").hasAnyAuthority(ROLE_MAPPING.get("ROLE_ADMIN"), ROLE_MAPPING.get("ROLE_USER"))
-            .requestMatchers(HttpMethod.GET, "/api/users/me").hasAnyAuthority(ROLE_MAPPING.get("ROLE_ADMIN"), ROLE_MAPPING.get("ROLE_USER"))
-            .requestMatchers("/api/orders", "/api/orders/**").hasAuthority(ROLE_MAPPING.get("ROLE_ADMIN"))
-            .requestMatchers("/api/users", "/api/users/**").hasAuthority(ROLE_MAPPING.get("ROLE_ADMIN"))
-            .requestMatchers("/public/**", "/auth/**").permitAll()
-            .requestMatchers("/", "/error", "/csrf", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").permitAll()
-            .anyRequest().authenticated();*/
-
         http.authorizeHttpRequests()
             .requestMatchers("/api/v1/auth/**").permitAll()
 
@@ -77,7 +66,9 @@ public class WebSecurityConfig {
             .anyRequest()
                 .authenticated();
 
-        http.addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        //http.addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.addFilter(new AppAuthenticationFilter(authenticationManager));
 
         http.exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
 

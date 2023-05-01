@@ -30,7 +30,7 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
 
-    private final TokenProvider tokenProvider;
+    //private final TokenProvider tokenProvider;
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(
@@ -111,6 +111,7 @@ public class AuthController {
             )
         );
 
-        return tokenProvider.generateJwtToken(authentication);
+        //return tokenProvider.generateJwtToken(authentication);
+        return null;
     }
 }
