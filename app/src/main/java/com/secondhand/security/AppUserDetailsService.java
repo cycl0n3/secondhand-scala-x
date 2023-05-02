@@ -24,7 +24,6 @@ public class AppUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.info("loadUserByUsername: " + username);
 
         Optional<User> userByUsernameOp = userService.getUserByUsername(username);
         Optional<User> userByEmailOp = userService.getUserByEmail(username);
@@ -39,8 +38,6 @@ public class AppUserDetailsService implements UserDetailsService {
 
         List<SimpleGrantedAuthority> authorities = user.getRoles().stream().map(role ->
                 new SimpleGrantedAuthority(role.getName())).toList();
-
-        log.info("returning user: " + user.getUsername());
 
         // return spring security user
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
