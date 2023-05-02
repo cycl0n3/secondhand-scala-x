@@ -54,6 +54,9 @@ dependencies {
     providedRuntime("io.jsonwebtoken:jjwt-impl:0.11.5")
     providedRuntime("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
+    // https://mvnrepository.com/artifact/com.auth0/java-jwt
+    implementation("com.auth0:java-jwt:4.2.2")
+
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

@@ -1,15 +1,11 @@
 package com.secondhand.auth;
 
-import com.secondhand.security.TokenProvider;
 import com.secondhand.user.User;
 import com.secondhand.user.UserService;
 
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,10 +23,6 @@ public class AuthController {
     private final UserService userService;
 
     private final PasswordEncoder passwordEncoder;
-
-    private final AuthenticationManager authenticationManager;
-
-    //private final TokenProvider tokenProvider;
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(
@@ -90,7 +82,7 @@ public class AuthController {
 
         user.setUsername(username);
         user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));
+        //user.setPassword(passwordEncoder.encode(password));
 
         userService.saveUser(user);
 
@@ -104,12 +96,12 @@ public class AuthController {
 
     private String authenticateAndGetToken(String username, String password) {
 
-        Authentication authentication = authenticationManager.authenticate(
+        /*Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 username,
                 password
             )
-        );
+        );*/
 
         //return tokenProvider.generateJwtToken(authentication);
         return null;
