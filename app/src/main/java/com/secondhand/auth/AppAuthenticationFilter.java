@@ -1,4 +1,4 @@
-package com.secondhand.security;
+package com.secondhand.auth;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -67,8 +67,14 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             .withIssuer(request.getRequestURL().toString())
             .sign(algorithm);
 
-        response.setHeader("access_token", accessToken);
-        response.setHeader("refresh_token", refreshToken);
+        //response.setHeader("access_token", accessToken);
+        //response.setHeader("refresh_token", refreshToken);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(
+            "{\"access_token\": \"" + accessToken + "\", \"refresh_token\": \"" + refreshToken + "\"}"
+        );
     }
 
     @Override

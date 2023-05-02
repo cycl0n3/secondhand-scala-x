@@ -1,5 +1,6 @@
 package com.secondhand.exception
 
+import lombok.extern.slf4j.Slf4j
 import org.springframework.http.{HttpHeaders, HttpStatusCode, ResponseEntity}
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -12,6 +13,8 @@ import java.util
 class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     override def handleMethodArgumentNotValid(ex: MethodArgumentNotValidException, headers: HttpHeaders, status: HttpStatusCode, request: WebRequest): ResponseEntity[AnyRef] = {
+        println("handleMethodArgumentNotValid" + ex)
+
         val body = new util.HashMap[String, Any]()
 
         body.put("timestamp", java.time.LocalDateTime.now())

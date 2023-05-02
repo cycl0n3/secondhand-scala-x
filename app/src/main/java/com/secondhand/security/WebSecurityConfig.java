@@ -1,5 +1,8 @@
 package com.secondhand.security;
 
+import com.secondhand.auth.AppAuthenticationFilter;
+import com.secondhand.auth.AppAuthorizationFilter;
+
 import lombok.AllArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
@@ -12,6 +15,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.Map;
 
@@ -35,34 +39,28 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        AppAuthenticationFilter filter = new AppAuthenticationFilter(authenticationConfiguration.getAuthenticationManager());
+        filter.setFilterProcessesUrl("/api/v1/auth/login");
+
         http.authorizeHttpRequests()
-            .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/auth/**").permitAll()
 
             .requestMatchers("/api/v1/user", "/api/v1/user/**")
-            .permitAll()
+                .hasAnyAuthority(ROLE_MAPPING.get("ROLE_ADMIN"))
 
             .requestMatchers("/api/v1/role", "/api/v1/role/**")
-            .permitAll()
-
-            .requestMatchers("/api/v1/orders", "/api/v1/orders/**")
-            .hasAnyAuthority(ROLE_MAPPING.get("ROLE_ADMIN"), ROLE_MAPPING.get("ROLE_USER"))
-
-            .requestMatchers("/api/v1/cart", "/api/v1/cart/**")
-            .hasAnyAuthority(ROLE_MAPPING.get("ROLE_ADMIN"), ROLE_MAPPING.get("ROLE_USER"))
+                .hasAnyAuthority(ROLE_MAPPING.get("ROLE_ADMIN"))
 
             .anyRequest()
-                .permitAll();
-            //.authenticated();
+                .authenticated();
 
-        //http.authorizeHttpRequests().anyRequest().permitAll();
+        http.addFilter(filter);
 
-        http.addFilter(new AppAuthenticationFilter(authenticationConfiguration.getAuthenticationManager()));
-
-        //http.exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
+        http.addFilterBefore(new AppAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-       http.cors().and().csrf().disable();
+        http.cors().and().csrf().disable();
 
         return http.build();
     }
