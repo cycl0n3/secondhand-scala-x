@@ -35,7 +35,7 @@ public class AuthTokenProvider {
 
         String accessToken = JWT.create()
             .withSubject(user.getUsername())
-            .withExpiresAt(new java.util.Date(System.currentTimeMillis() + 30 * 60 * 1000))
+            .withExpiresAt(new java.util.Date(System.currentTimeMillis() + 1 * 60 * 1000))
             .withIssuer(ISSUER)
             .withClaim("roles", user.getAuthorities()
                 .stream()
@@ -45,7 +45,7 @@ public class AuthTokenProvider {
 
         String refreshToken = JWT.create()
             .withSubject(user.getUsername())
-            .withExpiresAt(new java.util.Date(System.currentTimeMillis() + 60 * 60 * 1000))
+            .withExpiresAt(new java.util.Date(System.currentTimeMillis() + 2 * 60 * 1000))
             .withIssuer(ISSUER)
             .sign(algorithm);
 

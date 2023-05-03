@@ -1,5 +1,6 @@
 package com.secondhand.auth;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
@@ -67,23 +68,35 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
                     filterChain.doFilter(request, response);
+                }
+                catch (TokenExpiredException e) {
+                    log.error("Error authorization: {} {}", e.getClass(), e.getMessage());
+
+                    send_error(response, e.getMessage(), HttpServletResponse.SC_UNAUTHORIZED);
                 } catch (Exception e) {
-                    log.error("Error authorization: {}", e.getMessage());
+                    log.error("Error authorization: {} {}", e.getClass(), e.getMessage());
 
-                    Map<String, String> error = Map.of("error_message", e.getMessage());
-
-                    response.setHeader("error", e.getMessage());
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("UTF-8");
-
-                    response.getWriter().write(new ObjectMapper().writeValueAsString(error));
+                    send_error(response, e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
             } else {
                 log.info("Authorization header is missing");
 
+                send_error(response, "Authorization header is missing", HttpServletResponse.SC_UNAUTHORIZED);
+
                 filterChain.doFilter(request, response);
             }
         }
+    }
+
+
+    // write an error method to servlet response
+    private void send_error(HttpServletResponse response, String message, int status) throws IOException {
+        Map<String, String> error = Map.of("error_message", message);
+
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        response.getWriter().write(new ObjectMapper().writeValueAsString(error));
     }
 }
