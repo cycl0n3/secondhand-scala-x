@@ -106,7 +106,7 @@ public class AuthTokenProvider {
             throw new RuntimeException("User not found");
         }
 
-        return new Tuple2<>(username, Arrays.stream(roles)
+        return new Tuple2<>(user.getUsername(), Arrays.stream(roles)
             .map(SimpleGrantedAuthority::new)
             .collect(Collectors.toList()));
     }
