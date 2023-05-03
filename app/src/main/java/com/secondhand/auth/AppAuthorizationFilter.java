@@ -1,34 +1,36 @@
 package com.secondhand.auth;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import scala.Tuple2;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
+@AllArgsConstructor
 public class AppAuthorizationFilter extends OncePerRequestFilter {
+
+    private final AuthTokenProvider authTokenProvider;
+
+    private static final String[] ALLOWED_PATHS = {
+        "/api/v1/auth/",
+    };
 
     @Override
     protected void doFilterInternal(
@@ -36,24 +38,23 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain filterChain
     ) throws ServletException, IOException {
-        if(request.getServletPath().startsWith("/api/v1/auth/")) {
+        log.info("Securing {}: ", request.getServletPath());
+
+        if(Arrays.stream(ALLOWED_PATHS).anyMatch(request.getServletPath()::startsWith)) {
+            log.info("Allowed: {}", request.getServletPath());
+
             filterChain.doFilter(request, response);
         } else {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
 
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 try {
-                    String jwt = authorizationHeader.substring(7);
-                    Algorithm algorithm = Algorithm.HMAC256("@X/(}@2:w]=x4w$@.t[&T223q&X*E+c)".getBytes());
-                    JWTVerifier verifier = JWT.require(algorithm).build();
-                    DecodedJWT decodedJWT = verifier.verify(jwt);
+                    String token = authorizationHeader.substring(7);
 
-                    String username = decodedJWT.getSubject();
-                    String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+                    Tuple2<String, List<GrantedAuthority>> tuple = authTokenProvider.verifyAndGetAuthorities(token);
 
-                    List<GrantedAuthority> authorities = Stream.of(roles)
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                    String username = tuple._1();
+                    List<GrantedAuthority> authorities = tuple._2();
 
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         username,
@@ -65,7 +66,7 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
 
                     filterChain.doFilter(request, response);
                 } catch (Exception e) {
-                    log.error("Error logging in: {}", e.getMessage());
+                    log.error("Error authorization: {}", e.getMessage());
 
                     Map<String, String> error = Map.of("error_message", e.getMessage());
 
@@ -77,6 +78,8 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
                     response.getWriter().write(new ObjectMapper().writeValueAsString(error));
                 }
             } else {
+                log.info("Authorization header is missing");
+
                 filterChain.doFilter(request, response);
             }
         }

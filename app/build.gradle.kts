@@ -30,7 +30,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
+
+    providedRuntime("org.mariadb.jdbc:mariadb-java-client")
+
+    //implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    //providedRuntime("io.jsonwebtoken:jjwt-impl:0.11.5")
+    //providedRuntime("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
     implementation("org.apache.poi:poi:5.2.3")
     implementation("org.apache.poi:poi-ooxml:5.2.3")
@@ -38,7 +47,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.7")
 
     implementation("org.scala-lang:scala-library:2.13.10")
-
+    testRuntimeOnly("org.scala-lang.modules:scala-xml_2.13:1.2.0")
     implementation("com.google.guava:guava:31.1-jre")
 
     // Use Scalatest for testing our library
@@ -46,21 +55,7 @@ dependencies {
     testImplementation("org.scalatest:scalatest_2.13:3.2.15")
     testImplementation("org.scalatestplus:junit-4-13_2.13:3.2.15.0")
 
-    // Need scala-xml at test runtime
-    testRuntimeOnly("org.scala-lang.modules:scala-xml_2.13:1.2.0")
-
-    providedRuntime("org.mariadb.jdbc:mariadb-java-client")
-
-    providedRuntime("io.jsonwebtoken:jjwt-impl:0.11.5")
-    providedRuntime("io.jsonwebtoken:jjwt-jackson:0.11.5")
-
-    // https://mvnrepository.com/artifact/com.auth0/java-jwt
     implementation("com.auth0:java-jwt:4.2.2")
-
-    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
-
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
 
     compileOnly("org.projectlombok:lombok:1.18.26")
     annotationProcessor("org.projectlombok:lombok:1.18.26")
@@ -84,6 +79,6 @@ tasks.named<AbstractCompile>("compileScala") {
 
 tasks.named<AbstractCompile>("compileJava") {
     // Java also depends on the result of Scala compilation
-    // (which automatically makes it depend of compileScala)
+    // (which automatically makes it depend on compileScala)
     classpath += files(sourceSets.main.get().scala.classesDirectory)
 }

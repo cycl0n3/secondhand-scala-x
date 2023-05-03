@@ -3,6 +3,7 @@ package com.secondhand.security;
 import com.secondhand.auth.AppAuthenticationFilter;
 import com.secondhand.auth.AppAuthorizationFilter;
 
+import com.secondhand.auth.AuthTokenProvider;
 import lombok.AllArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,8 @@ public class WebSecurityConfig {
 
     private final AuthenticationProvider authProvider;
 
+    private final AuthTokenProvider authTokenProvider;
+
     private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean
@@ -39,8 +42,16 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        AppAuthenticationFilter filter = new AppAuthenticationFilter(authenticationConfiguration.getAuthenticationManager());
-        filter.setFilterProcessesUrl("/api/v1/auth/login");
+        AppAuthenticationFilter authenticationFilter = new AppAuthenticationFilter(
+            authenticationConfiguration.getAuthenticationManager(),
+            authTokenProvider
+        );
+
+        AppAuthorizationFilter authorizationFilter = new AppAuthorizationFilter(
+            authTokenProvider
+        );
+
+        authenticationFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
         http.authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/**").permitAll()
@@ -54,9 +65,9 @@ public class WebSecurityConfig {
             .anyRequest()
                 .authenticated();
 
-        http.addFilter(filter);
+        http.addFilter(authenticationFilter);
 
-        http.addFilterBefore(new AppAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
