@@ -1,6 +1,5 @@
 package com.secondhand.auth;
 
-
 import com.secondhand.user.User;
 import com.secondhand.user.UserService;
 

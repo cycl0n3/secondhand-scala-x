@@ -2,26 +2,24 @@ package com.secondhand.role;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/role")
 @AllArgsConstructor
 public class RoleController {
-
-    private final Logger logger = LoggerFactory.getLogger(RoleController.class);
 
     private final RoleService roleService;
 
@@ -32,7 +30,7 @@ public class RoleController {
         List<Role> roles = roleService.getAllRoles();
 
         if(roles.isEmpty()) {
-            logger.error("No roles found.");
+            log.error("No roles found.");
             return ResponseEntity.noContent().build();
         }
 
@@ -41,7 +39,7 @@ public class RoleController {
         Map<String, Object> response = new HashMap<>();
         response.put("roles", roleDtos);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     // save role to database\
@@ -54,9 +52,7 @@ public class RoleController {
         Map<String, Object> response = new HashMap<>();
         response.put("role", roleMapper.toRoleDto(savedRole));
 
-        URI location = URI.create(String.format("/api/v1/role/%s", savedRole.getId()));
-
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{roleId}")
@@ -64,14 +60,14 @@ public class RoleController {
         Optional<Role> role = roleService.getRoleById(roleId);
 
         if(role.isEmpty()) {
-            logger.error("Role with id {} not found.", roleId);
+            log.error("Role with id {} not found.", roleId);
             return ResponseEntity.noContent().build();
         }
 
         Map<String, Object> response = new HashMap<>();
         response.put("role", roleMapper.toRoleDto(role.get()));
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{roleName}")
@@ -79,13 +75,13 @@ public class RoleController {
         Optional<Role> role = roleService.getRoleByName(roleName);
 
         if(role.isEmpty()) {
-            logger.error("Role with name {} not found.", roleName);
+            log.error("Role with name {} not found.", roleName);
             return ResponseEntity.noContent().build();
         }
 
         Map<String, Object> response = new HashMap<>();
         response.put("role", roleMapper.toRoleDto(role.get()));
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

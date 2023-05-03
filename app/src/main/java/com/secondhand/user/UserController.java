@@ -5,10 +5,9 @@ import com.secondhand.role.RoleService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/user")
 public class UserController {
-
-    private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
     private final UserMapper userMapper;
@@ -36,7 +34,7 @@ public class UserController {
         List<User> users = userService.getAllUsers();
 
         if(users.isEmpty()) {
-            logger.error("No users found.");
+            log.error("No users found.");
             return ResponseEntity.noContent().build();
         }
 
@@ -59,12 +57,12 @@ public class UserController {
         Optional<User> userByEmail = userService.getUserByEmail(userDto.getEmail());
 
         if(userByUsername.isPresent()) {
-            logger.error("Username {} already exists.", userDto.getUsername());
+            log.error("Username {} already exists.", userDto.getUsername());
             return ResponseEntity.badRequest().build();
         }
 
         if(userByEmail.isPresent()) {
-            logger.error("Email {} already exists.", userDto.getEmail());
+            log.error("Email {} already exists.", userDto.getEmail());
             return ResponseEntity.badRequest().build();
         }
 
@@ -89,7 +87,7 @@ public class UserController {
         Optional<User> user = userService.getUserById(userId);
 
         if(user.isEmpty()) {
-            logger.error("User with id {} not found.", userId);
+            log.error("User with id {} not found.", userId);
             return ResponseEntity.noContent().build();
         }
 
@@ -110,7 +108,7 @@ public class UserController {
         Optional<User> user = userService.getUserByUsername(username);
 
         if(user.isEmpty()) {
-            logger.error("User with username {} not found.", username);
+            log.error("User with username {} not found.", username);
             return ResponseEntity.noContent().build();
         }
 
@@ -133,17 +131,17 @@ public class UserController {
         Optional<Role> role = roleService.getRoleById(roleId);
 
         if(user.isEmpty()) {
-            logger.error("User with id {} not found.", userId);
+            log.error("User with id {} not found.", userId);
             return ResponseEntity.noContent().build();
         }
 
         if(role.isEmpty()) {
-            logger.error("Role with id {} not found.", roleId);
+            log.error("Role with id {} not found.", roleId);
             return ResponseEntity.noContent().build();
         }
 
         if(user.get().getRoles().contains(role.get())) {
-            logger.error("User with id {} already has role with id {}.", userId, roleId);
+            log.error("User with id {} already has role with id {}.", userId, roleId);
             return ResponseEntity.unprocessableEntity().build();
         }
 
