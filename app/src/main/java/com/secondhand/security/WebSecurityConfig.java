@@ -4,6 +4,7 @@ import com.secondhand.auth.AppAuthenticationFilter;
 import com.secondhand.auth.AppAuthorizationFilter;
 
 import com.secondhand.auth.AuthTokenProvider;
+
 import lombok.AllArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,7 @@ public class WebSecurityConfig {
         AuthenticationManagerBuilder authenticationManagerBuilder =
             http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.authenticationProvider(authProvider);
+
         return authenticationManagerBuilder.build();
     }
 

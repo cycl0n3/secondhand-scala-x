@@ -40,7 +40,7 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain filterChain
     ) throws ServletException, IOException {
-        log.info("Securing {}: ", request.getServletPath());
+        log.info("Securing :{} ", request.getServletPath());
 
         if(Arrays.stream(ALLOWED_PATHS).anyMatch(request.getServletPath()::startsWith)) {
             log.info("Allowed: {}", request.getServletPath());
