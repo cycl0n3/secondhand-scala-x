@@ -34,7 +34,7 @@ public class AuthController {
     public void refreshToken(
         HttpServletRequest request,
         HttpServletResponse response
-    ) throws IOException, ServletException {
+    ) throws IOException {
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -42,44 +42,6 @@ public class AuthController {
                 String token = authorizationHeader.substring(7);
 
                 Map<String, String> tokens = authTokenProvider.verifyAndGenerateTokens(token);
-
-                //Map<String, String> tokens = authTokenProvider.refreshToken(token);
-
-                /*Algorithm algorithm = Algorithm.HMAC256(AuthTokenProvider.SECRET.getBytes());
-                JWTVerifier verifier = JWT.require(algorithm).build();
-                DecodedJWT decodedJWT = verifier.verify(token);
-
-                String username = decodedJWT.getSubject();
-                User user;
-
-                Optional<User> userByUsername = userService.getUserByUsername(username);
-                Optional<User> userByEmail = userService.getUserByEmail(username);
-
-                if(userByUsername.isPresent()) {
-                    user = userByUsername.get();
-                } else if(userByEmail.isPresent()) {
-                    user = userByEmail.get();
-                } else {
-                    throw new RuntimeException("User not found");
-                }
-
-                String accessToken = JWT.create()
-                    .withSubject(user.getUsername())
-                    .withExpiresAt(new java.util.Date(System.currentTimeMillis() + 30 * 60 * 1000))
-                    .withIssuer(AuthTokenProvider.ISSUER)
-                    .withClaim("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
-                    .sign(algorithm);
-
-                String refreshToken = JWT.create()
-                    .withSubject(user.getUsername())
-                    .withExpiresAt(new java.util.Date(System.currentTimeMillis() + 60 * 60 * 1000))
-                    .withIssuer(AuthTokenProvider.ISSUER)
-                    .sign(algorithm);
-
-                Map<String, String> tokens = Map.of(
-                    "access_token", accessToken,
-                    "refresh_token", refreshToken
-                );*/
 
                 response.setContentType(APPLICATION_JSON_VALUE);
                 new ObjectMapper().writeValue(response.getOutputStream(), tokens);
