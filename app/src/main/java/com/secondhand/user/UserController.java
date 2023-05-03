@@ -1,8 +1,8 @@
 package com.secondhand.user;
 
 import com.secondhand.role.Role;
-import com.secondhand.role.RoleMapper;
 import com.secondhand.role.RoleService;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -10,10 +10,10 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +30,6 @@ public class UserController {
     private final UserMapper userMapper;
 
     private final RoleService roleService;
-    private final RoleMapper roleMapper;
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getUsers() {
@@ -50,7 +49,7 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
         response.put("users", userDtos);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     // save user to database if username and email doesn't exist
@@ -82,9 +81,7 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
         response.put("user", savedUserDto);
 
-        URI location = URI.create(String.format("/api/v1/user/%s", savedUser.getId()));
-
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/id/{userId}")
@@ -105,7 +102,7 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
         response.put("user", userDto);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/username/{username}")
@@ -126,7 +123,7 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
         response.put("user", userDto);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     // add role to user and check if that role exists for that user
@@ -161,6 +158,6 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
         response.put("user", updatedUserDto);
 
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

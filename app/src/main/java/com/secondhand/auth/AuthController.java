@@ -1,24 +1,21 @@
 package com.secondhand.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.secondhand.user.User;
 import com.secondhand.user.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.Map;
-
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import java.util.Optional;
 
 @Slf4j
 @AllArgsConstructor
@@ -30,34 +27,57 @@ public class AuthController {
 
     private final AuthTokenProvider authTokenProvider;
 
+    private PasswordEncoder passwordEncoder;
+
     @GetMapping("/refresh")
-    public void refreshToken(
-        HttpServletRequest request,
-        HttpServletResponse response
-    ) throws IOException {
+    public ResponseEntity<?> refreshToken(
+        HttpServletRequest request
+    ) {
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             try {
                 String token = authorizationHeader.substring(7);
-
                 Map<String, String> tokens = authTokenProvider.verifyAndGenerateTokens(token);
 
-                response.setContentType(APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+                return ResponseEntity.ok(tokens);
             } catch (Exception exception) {
                 log.error("Error: {}", exception.getMessage());
 
-                response.setHeader("error", exception.getMessage());
-                response.setStatus(FORBIDDEN.value());
-
                 Map<String, String> error = Map.of("error_message", exception.getMessage());
-                response.setContentType(APPLICATION_JSON_VALUE);
 
-                new ObjectMapper().writeValue(response.getOutputStream(), error);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
             }
         } else {
-            throw new RuntimeException("Refresh token is missing");
+            Map<String, String> error = Map.of("error_message", "Refresh token is missing");
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
+    }
+
+    // user registration using rest api
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(
+        @RequestParam("username") String username,
+        @RequestParam("email") String email,
+        @RequestParam("password") String password
+    ) {
+
+        Optional<User> userByUsername = userService.getUserByUsername(username);
+        Optional<User> userByEmail = userService.getUserByEmail(email);
+
+        if (userByUsername.isPresent() || userByEmail.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
+
+        User user = new User();
+
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
+
+        userService.saveUser(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
