@@ -1,6 +1,7 @@
 package com.secondhand.auth;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,8 +24,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
 @AllArgsConstructor
@@ -46,15 +46,13 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
 
         if(Arrays.stream(ALLOWED_PATHS).anyMatch(request.getServletPath()::startsWith)) {
             log.info("Allowed: {}", request.getServletPath());
-
             filterChain.doFilter(request, response);
         } else {
-            String authorizationHeader = request.getHeader(AUTHORIZATION);
+            String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 try {
                     String token = authorizationHeader.substring(7);
-
                     Tuple2<String, List<GrantedAuthority>> tuple = authTokenProvider.verifyAndGetAuthorities(token);
 
                     String username = tuple._1();
@@ -67,24 +65,18 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
                     );
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
                     filterChain.doFilter(request, response);
                 }
                 catch (TokenExpiredException e) {
                     log.error("Error authorization: {} {}", e.getClass(), e.getMessage());
-
                     send_error(response, e.getMessage(), HttpServletResponse.SC_UNAUTHORIZED);
                 } catch (Exception e) {
                     log.error("Error authorization: {} {}", e.getClass(), e.getMessage());
-
                     send_error(response, e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
             } else {
                 log.info("Authorization header is missing");
-
                 send_error(response, "Authorization header is missing", HttpServletResponse.SC_UNAUTHORIZED);
-
-                filterChain.doFilter(request, response);
             }
         }
     }
