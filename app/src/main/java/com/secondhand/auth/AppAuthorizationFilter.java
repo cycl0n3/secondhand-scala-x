@@ -33,6 +33,7 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
 
     private static final String[] ALLOWED_PATHS = {
         "/api/v1/auth/",
+        "/api/v1/sample/",
     };
 
     @Override

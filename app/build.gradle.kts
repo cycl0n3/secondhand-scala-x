@@ -74,11 +74,13 @@ tasks.withType<Test> {
 tasks.named<AbstractCompile>("compileScala") {
     // Scala only needs the declared dependencies
     // (and not longer the output of compileJava)
-    classpath = sourceSets.main.get().compileClasspath
+    //classpath = sourceSets.main.get().compileClasspath
+    classpath += files(sourceSets.main.get().java.classesDirectory)
 }
 
 tasks.named<AbstractCompile>("compileJava") {
     // Java also depends on the result of Scala compilation
     // (which automatically makes it depend on compileScala)
-    classpath += files(sourceSets.main.get().scala.classesDirectory)
+    classpath = sourceSets.main.get().compileClasspath
+    //classpath += files(sourceSets.main.get().scala.classesDirectory)
 }
