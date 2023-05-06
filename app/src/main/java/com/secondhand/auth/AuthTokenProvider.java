@@ -30,7 +30,7 @@ public class AuthTokenProvider {
 
     private final UserService userService;
 
-    public Map<String, String> generateTokens(User user) {
+    public Map<String, Object> generateTokens(User user) {
         Algorithm algorithm = Algorithm.HMAC256(SECRET.getBytes());
 
         String accessToken = JWT.create()
@@ -49,7 +49,7 @@ public class AuthTokenProvider {
             .withIssuer(ISSUER)
             .sign(algorithm);
 
-        Map<String, String> tokens = new HashMap<>();
+        Map<String, Object> tokens = new HashMap<>();
 
         tokens.put("access_token", accessToken);
         tokens.put("refresh_token", refreshToken);
@@ -57,7 +57,7 @@ public class AuthTokenProvider {
         return tokens;
     }
 
-    public Map<String, String> verifyAndGenerateTokens(String refreshToken) {
+    public Map<String, Object> verifyAndGenerateTokens(String refreshToken) {
         Algorithm algorithm = Algorithm.HMAC256(SECRET.getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT decodedJWT = verifier.verify(refreshToken);

@@ -37,7 +37,7 @@ public class AuthController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             try {
                 String token = authorizationHeader.substring(7);
-                Map<String, String> tokens = authTokenProvider.verifyAndGenerateTokens(token);
+                Map<String, Object> tokens = authTokenProvider.verifyAndGenerateTokens(token);
 
                 return ResponseEntity.ok(tokens);
             } catch (Exception exception) {

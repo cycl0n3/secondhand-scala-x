@@ -5,6 +5,8 @@ import com.secondhand.auth.AppAuthorizationFilter;
 
 import com.secondhand.auth.AuthTokenProvider;
 
+import com.secondhand.user.UserMapper;
+import com.secondhand.user.UserService;
 import lombok.AllArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
@@ -32,6 +34,10 @@ public class WebSecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
 
+    private final UserService userService;
+
+    private final UserMapper userMapper;
+
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder =
@@ -46,7 +52,9 @@ public class WebSecurityConfig {
 
         AppAuthenticationFilter authenticationFilter = new AppAuthenticationFilter(
             authenticationConfiguration.getAuthenticationManager(),
-            authTokenProvider
+            authTokenProvider,
+            userService,
+            userMapper
         );
 
         AppAuthorizationFilter authorizationFilter = new AppAuthorizationFilter(

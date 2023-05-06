@@ -2,6 +2,10 @@ package com.secondhand.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.secondhand.user.UserDto;
+import com.secondhand.user.UserMapper;
+import com.secondhand.user.UserService;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @AllArgsConstructor
@@ -27,6 +32,10 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final AuthenticationManager authenticationManager;
 
     private final AuthTokenProvider authTokenProvider;
+
+    private final UserService userService;
+
+    private final UserMapper userMapper;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -49,7 +58,16 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("successfulAuthentication: authentication {}: ", authentication);
 
         User user = (User) authentication.getPrincipal();
-        Map<String, String> tokens = authTokenProvider.generateTokens(user);
+        Optional<com.secondhand.user.User> user1 = userService.getUserByUsername(user.getUsername());
+
+        Map<String, Object> tokens = authTokenProvider.generateTokens(user);
+
+        if(user1.isPresent()) {
+            UserDto userDto = userMapper.toUserDto(user1.get());
+            // set password to stars
+            userDto.setPassword("*****");
+            tokens.put("user", userDto);
+        }
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
