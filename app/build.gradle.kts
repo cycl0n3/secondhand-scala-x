@@ -7,13 +7,9 @@
  */
 
 plugins {
-    // Apply the scala Plugin to add support for Scala.
-    scala
-
+    groovy
     war
-
     id("org.springframework.boot") version "3.0.5"
-
     id("io.spring.dependency-management") version "1.1.0"
 }
 
@@ -41,19 +37,24 @@ dependencies {
     //providedRuntime("io.jsonwebtoken:jjwt-impl:0.11.5")
     //providedRuntime("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
-    implementation("org.apache.poi:poi:5.2.3")
-    implementation("org.apache.poi:poi-ooxml:5.2.3")
+    // groovy
+    implementation("org.codehaus.groovy:groovy-all:3.0.9")
 
-    implementation("org.apache.commons:commons-lang3:3.7")
+    //implementation("org.apache.poi:poi:5.2.3")
+    //implementation("org.apache.poi:poi-ooxml:5.2.3")
 
-    implementation("org.scala-lang:scala-library:2.13.10")
-    testRuntimeOnly("org.scala-lang.modules:scala-xml_2.13:1.2.0")
+    //implementation("org.apache.commons:commons-lang3:3.7")
+
+    //implementation("org.scala-lang:scala-library:2.13.10")
+    //testRuntimeOnly("org.scala-lang.modules:scala-xml_2.13:1.2.0")
+
     implementation("com.google.guava:guava:31.1-jre")
 
     // Use Scalatest for testing our library
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.scalatest:scalatest_2.13:3.2.15")
-    testImplementation("org.scalatestplus:junit-4-13_2.13:3.2.15.0")
+
+    //testImplementation("org.scalatest:scalatest_2.13:3.2.15")
+    //testImplementation("org.scalatestplus:junit-4-13_2.13:3.2.15.0")
 
     implementation("com.auth0:java-jwt:4.2.2")
 
@@ -69,18 +70,4 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-}
-
-tasks.named<AbstractCompile>("compileScala") {
-    // Scala only needs the declared dependencies
-    // (and not longer the output of compileJava)
-    //classpath = sourceSets.main.get().compileClasspath
-    classpath += files(sourceSets.main.get().java.classesDirectory)
-}
-
-tasks.named<AbstractCompile>("compileJava") {
-    // Java also depends on the result of Scala compilation
-    // (which automatically makes it depend on compileScala)
-    classpath = sourceSets.main.get().compileClasspath
-    //classpath += files(sourceSets.main.get().scala.classesDirectory)
 }

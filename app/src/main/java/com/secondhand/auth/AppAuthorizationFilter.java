@@ -18,7 +18,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import scala.Tuple2;
+import groovy.lang.Tuple2;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -55,8 +55,8 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
                     String token = authorizationHeader.substring(7);
                     Tuple2<String, List<GrantedAuthority>> tuple = authTokenProvider.verifyAndGetAuthorities(token);
 
-                    String username = tuple._1();
-                    List<GrantedAuthority> authorities = tuple._2();
+                    String username = tuple.getV1();
+                    List<GrantedAuthority> authorities = tuple.getV2();
 
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         username,

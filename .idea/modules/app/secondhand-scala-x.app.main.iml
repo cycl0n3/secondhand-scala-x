@@ -5,7 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/sources/annotationProcessor/java/main" isTestSource="false" generated="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../../app/src/main" dumb="true">
-      <sourceFolder url="file://$MODULE_DIR$/../../../app/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/src/main/groovy" isTestSource="false" />
     </content>
   </component>
 </module>

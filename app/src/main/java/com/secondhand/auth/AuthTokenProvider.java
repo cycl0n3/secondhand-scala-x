@@ -15,7 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
-import scala.Tuple2;
+import groovy.lang.Tuple2;
 
 import java.util.*;
 import java.util.stream.Collectors;
