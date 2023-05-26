@@ -112,9 +112,9 @@ public class UserController {
             return ResponseEntity.noContent().build();
         }
 
-        // set password to stars for security reasons
-
         UserDto userDto = userMapper.toUserDto(user.get());
+
+        // set password to stars for security reasons
 
         userDto.setPassword("*****");
 
