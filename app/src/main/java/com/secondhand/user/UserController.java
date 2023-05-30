@@ -7,12 +7,19 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,5 +164,37 @@ public class UserController {
         response.put("user", updatedUserDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    // upload picture
+    @PostMapping("/picture")
+    public ResponseEntity<?> uploadPicture(
+            @PathVariable @Min(0) Long userId,
+            @RequestParam("file") MultipartFile file
+    ) {
+        Optional<User> user = userService.getUserById(userId);
+
+        if(user.isEmpty()) {
+            log.error("User with id {} not found.", userId);
+            return ResponseEntity.noContent().build();
+        }
+
+        try {
+            InputStream in  = file.getInputStream();
+            File temp = File.createTempFile("temp---1---", ".jpg");
+            Files.copy(in, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            byte[] data = Files.readAllBytes(temp.toPath());
+            user.get().setPicture(data);
+            userService.saveUser(user.get());
+
+            UserDto userDto = userMapper.toUserDto(user.get());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("user", userDto);
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 }

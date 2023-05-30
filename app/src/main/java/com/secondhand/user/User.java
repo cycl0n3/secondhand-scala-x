@@ -30,6 +30,12 @@ public class User {
     @Column(name="password", nullable=false)
     private String password;
 
+    @Column(name="enabled", nullable=false)
+    private boolean enabled;
+
+    @Column(name="picture", nullable=true, columnDefinition="LONGBLOB")
+    private byte[] picture;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE},
         fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",

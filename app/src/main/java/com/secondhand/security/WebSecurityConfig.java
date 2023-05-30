@@ -66,17 +66,17 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/**").permitAll()
 
-            .requestMatchers("/api/v1/sample", "/api/v1/sample/**")
-                .permitAll()
+                .requestMatchers("/api/v1/user", "/api/v1/user/picture")
+                    .hasAnyAuthority(ROLE_MAPPING.get("ROLE_USER"))
 
-            .requestMatchers("/api/v1/user", "/api/v1/user/**")
-                .hasAnyAuthority(ROLE_MAPPING.get("ROLE_ADMIN"))
+                .requestMatchers("/api/v1/user/**")
+                    .hasAnyAuthority(ROLE_MAPPING.get("ROLE_ADMIN"))
 
-            .requestMatchers("/api/v1/role", "/api/v1/role/**")
-                .hasAnyAuthority(ROLE_MAPPING.get("ROLE_ADMIN"))
+                .requestMatchers("/api/v1/role", "/api/v1/role/**")
+                    .hasAnyAuthority(ROLE_MAPPING.get("ROLE_ADMIN"))
 
-            .anyRequest()
-                .authenticated();
+                .anyRequest()
+                    .authenticated();
 
         http.addFilter(authenticationFilter);
 

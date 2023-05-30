@@ -31,9 +31,9 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
 
     private final AuthTokenProvider authTokenProvider;
 
-    private static final String[] ALLOWED_PATHS = {
-        "/api/v1/auth/",
-    };
+//    private static final String[] ALLOWED_PATHS = {
+//        "/api/v1/auth/",
+//    };
 
     @Override
     protected void doFilterInternal(
