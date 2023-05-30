@@ -62,12 +62,11 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         Map<String, Object> tokens = authTokenProvider.generateTokens(user);
 
-        if(user1.isPresent()) {
-            UserDto userDto = userMapper.toUserDto(user1.get());
-            // set password to stars
-            userDto.setPassword("*****");
-            tokens.put("user", userDto);
-        }
+        UserDto userDto = userMapper.toUserDto(user1.get());
+
+        // set password to stars
+        userDto.setPassword("*****");
+        tokens.put("user", userDto);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

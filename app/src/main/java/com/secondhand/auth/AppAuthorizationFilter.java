@@ -33,7 +33,6 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
 
     private static final String[] ALLOWED_PATHS = {
         "/api/v1/auth/",
-        "/api/v1/sample/",
     };
 
     @Override
@@ -44,10 +43,10 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         log.info("Securing :{} ", request.getServletPath());
 
-        if(Arrays.stream(ALLOWED_PATHS).anyMatch(request.getServletPath()::startsWith)) {
-            log.info("Allowed: {}", request.getServletPath());
-            filterChain.doFilter(request, response);
-        } else {
+//        if(Arrays.stream(ALLOWED_PATHS).anyMatch(request.getServletPath()::startsWith)) {
+//            log.info("Allowed: {}", request.getServletPath());
+//            filterChain.doFilter(request, response);
+//        } else {
             String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -74,11 +73,12 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
                     log.error("Error authorization: {} {}", e.getClass(), e.getMessage());
                     send_error(response, e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
-            } else {
-                log.info("Authorization header is missing");
-                send_error(response, "Authorization header is missing", HttpServletResponse.SC_UNAUTHORIZED);
+//            } else {
+//                log.info("Authorization header is missing");
+//                send_error(response, "Authorization header is missing", HttpServletResponse.SC_UNAUTHORIZED);
+//            }
             }
-        }
+        filterChain.doFilter(request, response);
     }
 
 
