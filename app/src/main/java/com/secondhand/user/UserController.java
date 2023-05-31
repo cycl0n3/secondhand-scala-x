@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,10 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -48,11 +46,24 @@ public class UserController {
         List<UserDto> userDtos = userMapper.toUserDto(users);
 
         // set password to stars for security reasons
-
         userDtos.forEach(userDto -> userDto.setPassword("*****"));
 
         Map<String, Object> response = new HashMap<>();
         response.put("users", userDtos);
+
+        List<String> pictures = new ArrayList<>();
+
+        // set picture to base64 string
+        userDtos.forEach(userDto -> {
+            if(userDto.getPicture() != null) {
+                String base64Image = Base64.getEncoder().encodeToString(userDto.getPicture());
+                pictures.add(base64Image);
+            } else {
+                pictures.add(null);
+            }
+        });
+
+        response.put("pictures", pictures);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -80,11 +91,18 @@ public class UserController {
         UserDto savedUserDto = userMapper.toUserDto(savedUser);
 
         // set password to stars for security reasons
-
         savedUserDto.setPassword("*****");
 
         Map<String, Object> response = new HashMap<>();
         response.put("user", savedUserDto);
+
+        // set picture to base64 string
+        if(savedUserDto.getPicture() != null) {
+            String base64Image = Base64.getEncoder().encodeToString(savedUserDto.getPicture());
+            response.put("picture", base64Image);
+        } else {
+            response.put("picture", null);
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -101,11 +119,18 @@ public class UserController {
         UserDto userDto = userMapper.toUserDto(user.get());
 
         // set password to stars for security reasons
-
         userDto.setPassword("*****");
 
         Map<String, Object> response = new HashMap<>();
         response.put("user", userDto);
+
+        // set picture to base64 string
+        if(userDto.getPicture() != null) {
+            String base64Image = Base64.getEncoder().encodeToString(userDto.getPicture());
+            response.put("picture", base64Image);
+        } else {
+            response.put("picture", null);
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -122,18 +147,28 @@ public class UserController {
         UserDto userDto = userMapper.toUserDto(user.get());
 
         // set password to stars for security reasons
-
         userDto.setPassword("*****");
 
         Map<String, Object> response = new HashMap<>();
         response.put("user", userDto);
+
+        // set picture to base64 string
+        if(userDto.getPicture() != null) {
+            String base64Image = Base64.getEncoder().encodeToString(userDto.getPicture());
+            response.put("picture", base64Image);
+        } else {
+            response.put("picture", null);
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     // add role to user and check if that role exists for that user
     @PostMapping("/addRole/{userId}/{roleId}")
-    public ResponseEntity<Map<String, Object>> addRoleToUser(@PathVariable @Min(0) Long userId, @PathVariable @Min(0) Long roleId) {
+    public ResponseEntity<Map<String, Object>> addRoleToUser(
+        @PathVariable @Min(0) Long userId,
+        @PathVariable @Min(0) Long roleId
+    ) {
         Optional<User> user = userService.getUserById(userId);
         Optional<Role> role = roleService.getRoleById(roleId);
 
@@ -157,40 +192,59 @@ public class UserController {
         UserDto updatedUserDto = userMapper.toUserDto(updatedUser);
 
         // set password to stars for security reasons
-
         updatedUserDto.setPassword("*****");
 
         Map<String, Object> response = new HashMap<>();
         response.put("user", updatedUserDto);
 
+        // set picture to base64 string
+        if(updatedUserDto.getPicture() != null) {
+            String base64Image = Base64.getEncoder().encodeToString(updatedUserDto.getPicture());
+            response.put("picture", base64Image);
+        } else {
+            response.put("picture", null);
+        }
+
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     // upload picture
-    @PostMapping("/picture")
+    @PostMapping("/picture/{userId}")
     public ResponseEntity<?> uploadPicture(
-            @PathVariable @Min(0) Long userId,
-            @RequestParam("file") MultipartFile file
-    ) {
-        Optional<User> user = userService.getUserById(userId);
-
-        if(user.isEmpty()) {
-            log.error("User with id {} not found.", userId);
-            return ResponseEntity.noContent().build();
-        }
-
+        @RequestParam("file") MultipartFile file,
+        @PathVariable @Min(0) Long userId
+        ) {
         try {
+            Optional<User> userOp = userService.getUserById(userId);
+
+            if(userOp.isEmpty()) {
+                log.error("User with id {} not found.", userId);
+                return ResponseEntity.noContent().build();
+            }
+
             InputStream in  = file.getInputStream();
             File temp = File.createTempFile("temp---1---", ".jpg");
             Files.copy(in, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            byte[] data = Files.readAllBytes(temp.toPath());
-            user.get().setPicture(data);
-            userService.saveUser(user.get());
 
-            UserDto userDto = userMapper.toUserDto(user.get());
+            byte[] data = Files.readAllBytes(temp.toPath());
+            userOp.get().setPicture(data);
+            userService.saveUser(userOp.get());
+
+            UserDto userDto = userMapper.toUserDto(userOp.get());
+
+            // set password to stars for security reasons
+            userDto.setPassword("*****");
 
             Map<String, Object> response = new HashMap<>();
             response.put("user", userDto);
+
+            // set picture to base64 string
+            if(userDto.getPicture() != null) {
+                String base64Image = Base64.getEncoder().encodeToString(userDto.getPicture());
+                response.put("picture", base64Image);
+            } else {
+                response.put("picture", null);
+            }
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (IOException e) {

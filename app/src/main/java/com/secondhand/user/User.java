@@ -34,6 +34,7 @@ public class User {
     private boolean enabled;
 
     @Column(name="picture", nullable=true, columnDefinition="LONGBLOB")
+    @JsonIgnore
     private byte[] picture;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE},
