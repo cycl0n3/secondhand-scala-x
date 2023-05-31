@@ -68,14 +68,6 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         userDto.setPassword("*****");
         tokens.put("user", userDto);
 
-        // set picture to base64 string
-        if(userDto.getPicture() != null) {
-            String base64Image = java.util.Base64.getEncoder().encodeToString(userDto.getPicture());
-            tokens.put("picture", base64Image);
-        } else {
-            tokens.put("picture", null);
-        }
-
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 

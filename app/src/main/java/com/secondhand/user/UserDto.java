@@ -21,7 +21,7 @@ public class UserDto {
 
     private boolean enabled;
 
-    private byte[] picture;
+    private String picture;
 
     private List<RoleDto> roles;
 }

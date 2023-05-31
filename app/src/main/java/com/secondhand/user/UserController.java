@@ -45,25 +45,8 @@ public class UserController {
 
         List<UserDto> userDtos = userMapper.toUserDto(users);
 
-        // set password to stars for security reasons
-        userDtos.forEach(userDto -> userDto.setPassword("*****"));
-
         Map<String, Object> response = new HashMap<>();
         response.put("users", userDtos);
-
-        List<String> pictures = new ArrayList<>();
-
-        // set picture to base64 string
-        userDtos.forEach(userDto -> {
-            if(userDto.getPicture() != null) {
-                String base64Image = Base64.getEncoder().encodeToString(userDto.getPicture());
-                pictures.add(base64Image);
-            } else {
-                pictures.add(null);
-            }
-        });
-
-        response.put("pictures", pictures);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -90,19 +73,8 @@ public class UserController {
 
         UserDto savedUserDto = userMapper.toUserDto(savedUser);
 
-        // set password to stars for security reasons
-        savedUserDto.setPassword("*****");
-
         Map<String, Object> response = new HashMap<>();
         response.put("user", savedUserDto);
-
-        // set picture to base64 string
-        if(savedUserDto.getPicture() != null) {
-            String base64Image = Base64.getEncoder().encodeToString(savedUserDto.getPicture());
-            response.put("picture", base64Image);
-        } else {
-            response.put("picture", null);
-        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -118,19 +90,8 @@ public class UserController {
 
         UserDto userDto = userMapper.toUserDto(user.get());
 
-        // set password to stars for security reasons
-        userDto.setPassword("*****");
-
         Map<String, Object> response = new HashMap<>();
         response.put("user", userDto);
-
-        // set picture to base64 string
-        if(userDto.getPicture() != null) {
-            String base64Image = Base64.getEncoder().encodeToString(userDto.getPicture());
-            response.put("picture", base64Image);
-        } else {
-            response.put("picture", null);
-        }
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -146,19 +107,8 @@ public class UserController {
 
         UserDto userDto = userMapper.toUserDto(user.get());
 
-        // set password to stars for security reasons
-        userDto.setPassword("*****");
-
         Map<String, Object> response = new HashMap<>();
         response.put("user", userDto);
-
-        // set picture to base64 string
-        if(userDto.getPicture() != null) {
-            String base64Image = Base64.getEncoder().encodeToString(userDto.getPicture());
-            response.put("picture", base64Image);
-        } else {
-            response.put("picture", null);
-        }
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -191,19 +141,8 @@ public class UserController {
 
         UserDto updatedUserDto = userMapper.toUserDto(updatedUser);
 
-        // set password to stars for security reasons
-        updatedUserDto.setPassword("*****");
-
         Map<String, Object> response = new HashMap<>();
         response.put("user", updatedUserDto);
-
-        // set picture to base64 string
-        if(updatedUserDto.getPicture() != null) {
-            String base64Image = Base64.getEncoder().encodeToString(updatedUserDto.getPicture());
-            response.put("picture", base64Image);
-        } else {
-            response.put("picture", null);
-        }
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -232,19 +171,8 @@ public class UserController {
 
             UserDto userDto = userMapper.toUserDto(userOp.get());
 
-            // set password to stars for security reasons
-            userDto.setPassword("*****");
-
             Map<String, Object> response = new HashMap<>();
             response.put("user", userDto);
-
-            // set picture to base64 string
-            if(userDto.getPicture() != null) {
-                String base64Image = Base64.getEncoder().encodeToString(userDto.getPicture());
-                response.put("picture", base64Image);
-            } else {
-                response.put("picture", null);
-            }
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (IOException e) {
