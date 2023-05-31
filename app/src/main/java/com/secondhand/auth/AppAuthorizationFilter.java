@@ -2,8 +2,6 @@ package com.secondhand.auth;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +19,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import groovy.lang.Tuple2;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -64,14 +61,14 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
                     );
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    filterChain.doFilter(request, response);
+                    //filterChain.doFilter(request, response);
                 }
                 catch (TokenExpiredException e) {
                     log.error("Error authorization: {} {}", e.getClass(), e.getMessage());
-                    send_error(response, e.getMessage(), HttpServletResponse.SC_UNAUTHORIZED);
+                    set_error(response, e.getMessage(), HttpServletResponse.SC_UNAUTHORIZED);
                 } catch (Exception e) {
                     log.error("Error authorization: {} {}", e.getClass(), e.getMessage());
-                    send_error(response, e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    set_error(response, e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
 //            } else {
 //                log.info("Authorization header is missing");
@@ -83,13 +80,13 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
 
 
     // write an error method to servlet response
-    private void send_error(HttpServletResponse response, String message, int status) throws IOException {
-        Map<String, String> error = Map.of("error_message", message);
+    private void set_error(HttpServletResponse response, String message, int status) throws IOException {
+        //Map<String, String> error = Map.of("error_message", message);
 
         response.setStatus(status);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
 
-        response.getWriter().write(new ObjectMapper().writeValueAsString(error));
+        //response.setContentType("application/json");
+        //response.setCharacterEncoding("UTF-8");
+        //response.getWriter().write(new ObjectMapper().writeValueAsString(error));
     }
 }

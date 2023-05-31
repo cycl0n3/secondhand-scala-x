@@ -33,7 +33,7 @@ public class User {
     @Column(name="enabled", nullable=false)
     private boolean enabled;
 
-    @Column(name="picture", nullable=true, columnDefinition="LONGBLOB")
+    @Column(name="picture", columnDefinition="LONGBLOB")
     @JsonIgnore
     private byte[] picture;
 

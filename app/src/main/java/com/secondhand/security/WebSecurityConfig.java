@@ -66,7 +66,7 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/**").permitAll()
 
-                .requestMatchers("/api/v1/user", "/api/v1/user/picture")
+                .requestMatchers("/api/v1/user/picture/**")
                     .hasAnyAuthority(ROLE_MAPPING.get("ROLE_USER"))
 
                 .requestMatchers("/api/v1/user/**")

@@ -149,8 +149,8 @@ public class UserController {
 
     // upload picture
     @PostMapping("/picture/{userId}")
-    public ResponseEntity<?> uploadPicture(
-        @RequestParam("file") MultipartFile file,
+    public ResponseEntity<Map<String, Object>> uploadPicture(
+        @RequestPart("file") MultipartFile file,
         @PathVariable @Min(0) Long userId
         ) {
         try {
@@ -161,22 +161,26 @@ public class UserController {
                 return ResponseEntity.noContent().build();
             }
 
+            User user = userOp.get();
+
             InputStream in  = file.getInputStream();
             File temp = File.createTempFile("temp---1---", ".jpg");
             Files.copy(in, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             byte[] data = Files.readAllBytes(temp.toPath());
-            userOp.get().setPicture(data);
-            userService.saveUser(userOp.get());
+            user.setPicture(data);
+            userService.updateUser(user);
 
-            UserDto userDto = userMapper.toUserDto(userOp.get());
+            UserDto userDto = userMapper.toUserDto(user);
 
             Map<String, Object> response = new HashMap<>();
             response.put("user", userDto);
 
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.ok().body(response);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }

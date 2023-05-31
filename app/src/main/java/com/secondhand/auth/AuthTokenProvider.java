@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 public class AuthTokenProvider {
 
     public static final String SECRET = "@X/(}@2:w]=x4w$@.t[&T223q&X*E+c";
+    public static final long TOKEN_EXPIRY = /* 1 year */ 365L * 24 * 60 * 60 * 1000;
     public static final String ISSUER = "http://localhost:8080";
 
     private final UserService userService;
@@ -35,7 +36,7 @@ public class AuthTokenProvider {
 
         String accessToken = JWT.create()
             .withSubject(user.getUsername())
-            .withExpiresAt(new java.util.Date(System.currentTimeMillis() + 30 * 60 * 1000))
+            .withExpiresAt(new java.util.Date(System.currentTimeMillis() + TOKEN_EXPIRY))
             .withIssuer(ISSUER)
             .withClaim("roles", user.getAuthorities()
                 .stream()
@@ -45,7 +46,7 @@ public class AuthTokenProvider {
 
         String refreshToken = JWT.create()
             .withSubject(user.getUsername())
-            .withExpiresAt(new java.util.Date(System.currentTimeMillis() + 60 * 60 * 1000))
+            .withExpiresAt(new java.util.Date(System.currentTimeMillis() + 2 * TOKEN_EXPIRY))
             .withIssuer(ISSUER)
             .sign(algorithm);
 
