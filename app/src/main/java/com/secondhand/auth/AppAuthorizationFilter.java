@@ -65,10 +65,12 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
                 }
                 catch (TokenExpiredException e) {
                     log.error("Error authorization: {} {}", e.getClass(), e.getMessage());
-                    set_error(response, e.getMessage(), HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    //set_error(response, e.getMessage(), HttpServletResponse.SC_UNAUTHORIZED);
                 } catch (Exception e) {
                     log.error("Error authorization: {} {}", e.getClass(), e.getMessage());
-                    set_error(response, e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    //set_error(response, e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
 //            } else {
 //                log.info("Authorization header is missing");
